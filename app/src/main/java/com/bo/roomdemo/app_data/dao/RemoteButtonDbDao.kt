@@ -4,26 +4,26 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import com.bo.roomdemo.app_data.entity.RemoteButtonDbEntity
 import com.bo.roomdemo.app_data.entity.RemoteDbEntity
 
 @Dao
 interface RemoteButtonDbDao {
-    @Query("SELECT * FROM remotedbentity")
-    fun getAll(): List<RemoteDbEntity>
+    @Query("SELECT * FROM remotebuttondbentity")
+    fun getAll(): List<RemoteButtonDbEntity>
 
-    @Query("SELECT * FROM remotedbentity WHERE remote_name IN (:remoteIds)")
-    fun loadAllByIds(remoteIds: IntArray): List<RemoteDbEntity>
+    @Query("SELECT * FROM remotebuttondbentity WHERE remote_id IN (:remoteIds)")
+    fun loadAllByIds(remoteIds: IntArray): List<RemoteButtonDbEntity>
 
-    @Query("SELECT * FROM RemoteDbEntity WHERE remote_name LIKE :first AND " +
-            "remote_name LIKE :last LIMIT 1")
-    fun findByName(first: String, last: String): RemoteDbEntity
-
-    @Insert
-    fun insert(remoteDbEntity: RemoteDbEntity)
+    @Query("SELECT * FROM remotebuttondbentity WHERE remote_id == :remoteId LIMIT 1")
+    fun findByName(remoteId: String): RemoteButtonDbEntity
 
     @Insert
-    fun insertAll(vararg remoteDbEntities: RemoteDbEntity)
+    fun insert(remoteButtonDbEntity: RemoteButtonDbEntity)
+
+    @Insert
+    fun insertAll(vararg remoteButtonDbEntity: RemoteButtonDbEntity)
 
     @Delete
-    fun delete(remoteDbEntity: RemoteDbEntity)
+    fun delete(remoteButtonDbEntity: RemoteButtonDbEntity)
 }

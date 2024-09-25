@@ -5,22 +5,22 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import androidx.activity.enableEdgeToEdge
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.room.Room
 import com.bo.roomdemo.R
+import com.bo.roomdemo.RemoteUtility
+import com.bo.roomdemo.app_data.dao.RemoteButtonDbDao
 import com.bo.roomdemo.app_data.dao.RemoteDbDao
 import com.bo.roomdemo.app_data.db.AppDatabase
 import com.bo.roomdemo.app_data.entity.RemoteDbEntity
+import com.bo.roomdemo.data.RemotesModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
@@ -29,6 +29,7 @@ import java.util.Locale
 class MainActivity : AppCompatActivity() {
 
     var remoteDbDao: RemoteDbDao? = null
+    var remoteButtonDbDao: RemoteButtonDbDao? = null
     var btnInsert: Button? = null
     var btnGetAll: Button? = null
 
@@ -42,6 +43,41 @@ class MainActivity : AppCompatActivity() {
 
         initRoomDb()
 
+        getPresetAllRemote()
+
+        insertRemoteData(getPresetAllRemote())
+    }
+
+    private fun insertRemoteData(presetAllRemote: RemotesModel?) {
+
+        if (presetAllRemote?.irRemoteInfo == null) return
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            Log.d("remoteInsert", "remotes size: ${presetAllRemote.irRemoteInfo.size}")
+
+            for (remoteObj in presetAllRemote.irRemoteInfo) {
+                val remoteEntity = presetAllRemote.remotesModelToRemoteDbEntity(remoteObj)
+
+                remoteDbDao?.insert(remoteEntity).let {
+
+                    Log.d("remoteInsert", "buttons size: ${remoteObj.remoteButtons.size}")
+
+                    for (btnObj in remoteObj.remoteButtons) {
+                        val buttonEntity =
+                            presetAllRemote.remotesButtonToRemoteButtonDbEntity(btnObj)
+                        remoteButtonDbDao?.insert(buttonEntity)
+                        Thread.sleep(100)
+                    }
+                }
+                Thread.sleep(100)
+            }
+        }
+    }
+
+    private fun getPresetAllRemote(): RemotesModel? {
+        val remotes = RemoteUtility.getInstance().getPresetRemotes(this)
+        Log.d("roomDb", "${remotes?.irRemoteInfo?.size}")
+        return remotes
     }
 
     private fun initView() {
@@ -65,6 +101,7 @@ class MainActivity : AppCompatActivity() {
             val timestamp = generateTimestamp()
             val insertRemoteDbEntity =
                 RemoteDbEntity(
+                    remoteId = 1,
                     remoteName = "TestRemote",
                     remoteModel = "RT001",
                     remoteNote = "Do for test",
@@ -74,7 +111,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         btnGetAll?.setOnClickListener {
-            getAllUser()
+            lifecycleScope.launch(Dispatchers.IO) {
+                val allRemotes = remoteDbDao?.getAll()
+                Log.d("remoteInsert", "number of remotes: ${allRemotes?.size}")
+
+                val allRemoteButtons = remoteButtonDbDao?.getAll()
+                Log.d("remoteInsert", "number of buttons: ${allRemoteButtons?.size}")
+            }
         }
     }
 
@@ -83,8 +126,8 @@ class MainActivity : AppCompatActivity() {
             val remoteDbEntities: List<RemoteDbEntity> = remoteDbDao?.getAll() ?: arrayListOf()
             Log.d("roomDb", "${remoteDbEntities.size}")
 
-            for(data in remoteDbEntities){
-             Log.d("roomDb", "${data.remoteAccessDateTime}")
+            for (data in remoteDbEntities) {
+                Log.d("roomDb", "${data.remoteAccessDateTime}")
             }
 
         }
@@ -104,6 +147,7 @@ class MainActivity : AppCompatActivity() {
                 "database-ir-remote"
             ).build()
             remoteDbDao = db.remoteDao()
+            remoteButtonDbDao = db.remoteButtonDao()
         }
 
     }

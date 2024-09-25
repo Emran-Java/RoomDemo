@@ -7,7 +7,8 @@ import androidx.room.PrimaryKey
 @Entity
 data class RemoteDbEntity(
     @PrimaryKey(autoGenerate = true)
-    var remoteId: Long = 0,
+    var rId: Long = 0,
+    @ColumnInfo(name = "remote_id") val remoteId: Long?,
     @ColumnInfo(name = "remote_name") val remoteName: String?,
     @ColumnInfo(name = "remote_model") val remoteModel: String?,
     @ColumnInfo(name = "remote_note") val remoteNote: String?,

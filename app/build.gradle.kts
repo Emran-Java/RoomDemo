@@ -49,17 +49,12 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-//    implementation("androidx.room:room-runtime:2.x.x")
-//    kapt ("androidx.room:room-compiler:2.x.x")
-
+    //room database
     implementation("androidx.room:room-runtime:2.5.2") // or latest version
     annotationProcessor("androidx.room:room-compiler:2.5.2")
-    // optional- Kotlin Extensions and Coroutines support for Room
     implementation("androidx.room:room-ktx:2.5.2")
-
-    //implementation("androidx.room:room-runtime:2.5.2") // Or latest version
     kapt("androidx.room:room-compiler:2.5.2")
-    // optional - Kotlin Extensions and Coroutines support for Room
-   // implementation("androidx.room:room-ktx:2.5.2")
 
+    //GSON
+    implementation ("com.google.code.gson:gson:2.8.9") // Use the latest version
 }

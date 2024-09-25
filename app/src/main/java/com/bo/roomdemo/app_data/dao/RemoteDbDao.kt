@@ -14,9 +14,9 @@ interface RemoteDbDao {
     @Query("SELECT * FROM remotedbentity WHERE remote_name IN (:remoteIds)")
     fun loadAllByIds(remoteIds: IntArray): List<RemoteDbEntity>
 
-    @Query("SELECT * FROM RemoteDbEntity WHERE remote_name LIKE :first AND " +
-            "remote_name LIKE :last LIMIT 1")
-    fun findByName(first: String, last: String): RemoteDbEntity
+    @Query("SELECT * FROM RemoteDbEntity WHERE remote_name LIKE :rmtNm AND " +
+            "remote_model LIKE :rmtMdlNm LIMIT 1")
+    fun findByName(rmtNm: String, rmtMdlNm: String): RemoteDbEntity
 
     @Insert
     fun insert(remoteDbEntity: RemoteDbEntity)
