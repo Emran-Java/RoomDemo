@@ -8,6 +8,10 @@ import com.bo.roomdemo.app_data.entity.RemoteDbEntity
 
 @Dao
 interface RemoteDbDao {
+
+    @Query("SELECT COUNT(*) FROM remotedbentity WHERE remote_id = :remoteId")
+    fun doesRemoteExist(remoteId: Long): Int
+
     @Query("SELECT * FROM remotedbentity")
     fun getAll(): List<RemoteDbEntity>
 

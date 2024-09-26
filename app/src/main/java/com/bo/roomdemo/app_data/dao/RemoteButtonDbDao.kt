@@ -9,14 +9,18 @@ import com.bo.roomdemo.app_data.entity.RemoteDbEntity
 
 @Dao
 interface RemoteButtonDbDao {
+
     @Query("SELECT * FROM remotebuttondbentity")
     fun getAll(): List<RemoteButtonDbEntity>
 
     @Query("SELECT * FROM remotebuttondbentity WHERE remote_id IN (:remoteIds)")
-    fun loadAllByIds(remoteIds: IntArray): List<RemoteButtonDbEntity>
+    fun loadAllByIds(remoteIds: LongArray): List<RemoteButtonDbEntity>
+
+    @Query("SELECT * FROM remotebuttondbentity WHERE remote_id == :remoteId")
+    fun findRemoteButtonsByRemoteId(remoteId: Long): List<RemoteButtonDbEntity>
 
     @Query("SELECT * FROM remotebuttondbentity WHERE remote_id == :remoteId LIMIT 1")
-    fun findByName(remoteId: String): RemoteButtonDbEntity
+    fun findByRemoteId(remoteId: Long): RemoteButtonDbEntity
 
     @Insert
     fun insert(remoteButtonDbEntity: RemoteButtonDbEntity)

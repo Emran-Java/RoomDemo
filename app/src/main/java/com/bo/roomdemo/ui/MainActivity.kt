@@ -17,6 +17,7 @@ import com.bo.roomdemo.app_data.dao.RemoteDbDao
 import com.bo.roomdemo.app_data.db.AppDatabase
 import com.bo.roomdemo.app_data.entity.RemoteDbEntity
 import com.bo.roomdemo.data.RemotesModel
+import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -56,6 +57,12 @@ class MainActivity : AppCompatActivity() {
             Log.d("remoteInsert", "remotes size: ${presetAllRemote.irRemoteInfo.size}")
 
             for (remoteObj in presetAllRemote.irRemoteInfo) {
+
+                if((remoteDbDao?.doesRemoteExist(remoteObj.remoteId) ?: 0) >= 1){
+                    Log.d("remoteInsert", "Exist remote with id ${remoteObj.remoteId}")
+                    continue
+                }
+
                 val remoteEntity = presetAllRemote.remotesModelToRemoteDbEntity(remoteObj)
 
                 remoteDbDao?.insert(remoteEntity).let {
@@ -98,16 +105,7 @@ class MainActivity : AppCompatActivity() {
     private fun initClickListener() {
 
         btnInsert?.setOnClickListener {
-            val timestamp = generateTimestamp()
-            val insertRemoteDbEntity =
-                RemoteDbEntity(
-                    remoteId = 1,
-                    remoteName = "TestRemote",
-                    remoteModel = "RT001",
-                    remoteNote = "Do for test",
-                    remoteAccessDateTime = timestamp
-                )
-            insertUser(insertRemoteDbEntity)
+           findByRemoteId(2)
         }
 
         btnGetAll?.setOnClickListener {
@@ -118,6 +116,15 @@ class MainActivity : AppCompatActivity() {
                 val allRemoteButtons = remoteButtonDbDao?.getAll()
                 Log.d("remoteInsert", "number of buttons: ${allRemoteButtons?.size}")
             }
+        }
+    }
+
+    private fun findByRemoteId(remoteId: Long) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val allButtons = remoteButtonDbDao?.findRemoteButtonsByRemoteId(remoteId)
+            Log.d("remoteInsert", "number of remotes: ${allButtons?.size}")
+
+            Log.d("remoteInsert", "number of buttons: ${Gson().toJson(allButtons)}")
         }
     }
 
