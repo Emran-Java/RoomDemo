@@ -44,8 +44,6 @@ class MainActivity : AppCompatActivity() {
 
         initRoomDb()
 
-        getPresetAllRemote()
-
         insertRemoteData(getPresetAllRemote())
     }
 
